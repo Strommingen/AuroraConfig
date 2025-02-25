@@ -1,0 +1,267 @@
+
+!
+! Last configuration change at 13:55:45 UTC Tue Feb 25 2025 by admin
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname FK-Sw1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 9 $9$8vyYyN9k5mXvHp$DvN5KZ9iDLvlOQn6HlUEUQem71taWT1iNlPB4h6qjxU
+!
+username admin secret 9 $9$dlr0NnQQ1hnlLu$TPE2uF8Wb.nLOxmcZjNgh1gGgCdQisbgSxGrVCCvI3w
+no aaa new-model
+switch 1 provision c1000-24t-4g-l
+system mtu routing 1500
+!
+!
+no ip domain-lookup
+ip domain-name kvistco.mc
+login block-for 120 attempts 3 within 60
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+spanning-tree vlan 210,220,230,240,250,999 priority 24576
+!
+vlan internal allocation policy ascending
+no cdp run
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Port-channel2
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface GigabitEthernet1/0/1
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 1 mode desirable
+!
+interface GigabitEthernet1/0/2
+ description Etherchannel to FK-Sw2
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 1 mode desirable
+!
+interface GigabitEthernet1/0/3
+ description Etherchannel to FK-Sw3
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 2 mode desirable
+!
+interface GigabitEthernet1/0/4
+ description Etherchannel to FK-Sw3
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 2 mode desirable
+!
+interface GigabitEthernet1/0/5
+ description Connected to FK-AP-Store
+ switchport access vlan 230
+ switchport mode access
+!
+interface GigabitEthernet1/0/6
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/7
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/8
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/9
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/10
+ description Connected to Management PC
+ switchport access vlan 210
+ switchport mode access
+!
+interface GigabitEthernet1/0/11
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/12
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/13
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/14
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/15
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/16
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/17
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/18
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/19
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/20
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/21
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/22
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/23
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/24
+ switchport trunk allowed vlan 210,220,230,240,250,999
+ switchport trunk native vlan 999
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/25
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/26
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/27
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/28
+ description Unused ports
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan210
+ ip address 10.200.0.11 255.255.255.224
+!
+interface Vlan230
+ no ip address
+!
+ip default-gateway 10.200.0.1
+ip http server
+ip http secure-server
+ip ssh version 2
+!
+!
+!
+banner motd  Unauthorized Access Is Prohibited! 
+!
+line con 0
+ password 7 01300F175804575D72181B5F58
+ logging synchronous
+ login
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+ transport input ssh
+!
+ntp authentication-key 10 md5 130B030200091D3A2336292030 7
+ntp authenticate
+ntp trusted-key 10
+ntp server 10.200.0.1 key 10
+end

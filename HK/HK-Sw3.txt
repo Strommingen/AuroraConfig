@@ -1,0 +1,240 @@
+
+!
+! Last configuration change at 12:44:18 UTC Tue Feb 25 2025
+!
+version 15.2
+no service pad
+service timestamps debug datetime localtime
+service timestamps log datetime localtime
+no service password-encryption
+!
+hostname HK-Sw3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+username admin secret 9 $9$M0TZHJwS3myWW9$urt8zK/txis8hKs0vkWE3tA/ZpOUnSDaK/F7R8c39E.
+no aaa new-model
+switch 1 provision c1000-24t-4g-l
+system mtu routing 1500
+!
+!
+no ip domain-lookup
+ip domain-name kvistco.mc
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+no cdp run
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ no ip address
+!
+interface Port-channel1
+!
+interface Port-channel2
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Port-channel3
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface GigabitEthernet1/0/1
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 3 mode desirable
+!
+interface GigabitEthernet1/0/2
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 3 mode desirable
+!
+interface GigabitEthernet1/0/3
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 2 mode desirable
+!
+interface GigabitEthernet1/0/4
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 2 mode desirable
+!
+interface GigabitEthernet1/0/5
+ switchport access vlan 110
+ switchport mode access
+!
+interface GigabitEthernet1/0/6
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/7
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/8
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/9
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/10
+ switchport access vlan 888
+ switchport mode access
+!
+interface GigabitEthernet1/0/11
+ switchport access vlan 110
+ switchport mode access
+!
+interface GigabitEthernet1/0/12
+ switchport access vlan 110
+ switchport mode access
+!
+interface GigabitEthernet1/0/13
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/14
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/15
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/16
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/17
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/18
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/19
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/20
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/21
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/22
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/23
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/24
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/25
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/26
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/27
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet1/0/28
+ switchport access vlan 888
+ switchport mode access
+ shutdown
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan110
+ ip address 10.100.0.13 255.255.255.224
+ ipv6 address FE80::13 link-local
+ ipv6 address 2001:CAFE:2025:110::13/64
+!
+interface Vlan210
+ description Management
+ no ip address
+!
+ip default-gateway 10.100.0.1
+ip http server
+ip http secure-server
+ip ssh version 2
+!
+logging origin-id hostname
+logging host 10.100.0.16
+!
+!
+banner motd Unauthorized Access Is Prohibited!
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+ transport input ssh
+!
+end
