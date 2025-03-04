@@ -1,12 +1,11 @@
 
 !
-! Last configuration change at 16:17:09 UTC Tue Feb 25 2025 by admin
+! Last configuration change at 14:46:12 UTC Tue Mar 4 2025 by admin
 !
 version 17.3
 service timestamps debug datetime msec
 service timestamps log datetime localtime
 service password-encryption
-! Call-home is enabled by Smart-Licensing.
 service call-home
 platform qfp utilization monitor load 80
 platform punt-keepalive disable-kernel-core
@@ -48,6 +47,7 @@ ip dhcp pool vlan130_pool
 !
 !
 login on-success log
+ipv6 unicast-routing
 !
 !
 !
@@ -138,7 +138,7 @@ crypto pki certificate chain SLA-TrustPoint
 !
 !
 no license feature hseck9
-license udi pid ISR4221/K9 sn FGL2721LKTA
+license udi pid ISR4221/K9 sn FGL2721LKTN
 license boot level securityk9
 memory free low-watermark processor 69214
 !
@@ -186,6 +186,8 @@ interface GigabitEthernet0/0/0.110
  ip address 10.100.0.2 255.255.255.224
  standby 110 ip 10.100.0.1
  standby 110 preempt
+ ipv6 address FE80::112 link-local
+ ipv6 address 2001:CAFE:2025:110::2/64
 !
 interface GigabitEthernet0/0/0.120
  description VLAN 120
@@ -193,17 +195,26 @@ interface GigabitEthernet0/0/0.120
  ip address 10.100.0.34 255.255.255.224
  standby 120 ip 10.100.0.33
  standby 120 preempt
+ ipv6 address FE80::122 link-local
+ ipv6 address 2001:CAFE:2025:120::2/64
 !
 interface GigabitEthernet0/0/0.130
  description VLAN 130
  encapsulation dot1Q 130
  ip address 10.100.0.66 255.255.255.240
+ standby version 2
  standby 130 ip 10.100.0.65
  standby 130 preempt
+ standby 131 ipv6 FE80::1
+ standby 131 preempt
+ ipv6 address FE80::132 link-local
+ ipv6 address 2001:CAFE:2025:130::2/64
 !
 interface GigabitEthernet0/0/1
  ip address 192.168.0.2 255.255.255.252
  negotiation auto
+ ipv6 address FE80::1 link-local
+ ipv6 address 2003:1111:2222:3333::1/64
 !
 ip default-gateway 192.168.0.1
 ip http server
@@ -212,11 +223,13 @@ ip http secure-server
 ip forward-protocol nd
 ip route 0.0.0.0 0.0.0.0 192.168.0.1
 ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0/1 192.168.0.1
+ip ssh version 2
 !
 !
 !
 logging origin-id hostname
 logging host 10.100.0.16
+ipv6 route ::/0 2003:1111:2222:3333::2
 !
 !
 !
@@ -234,6 +247,9 @@ line aux 0
 line vty 0 4
  login local
  transport input ssh
+line vty 5 15
+ login
+ transport input ssh
 !
 call-home
  ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
@@ -242,6 +258,10 @@ call-home
  profile "CiscoTAC-1"
   active
   destination transport-method http
+ntp authentication-key 10 md5 030A4F1B0D0A385C461B181612 7
+ntp authenticate
+ntp trusted-key 10
+ntp server 200.100.0.2 key 10
 !
 !
 !
