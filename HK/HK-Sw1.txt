@@ -1,8 +1,9 @@
 
 !
-! Last configuration change at 12:41:41 UTC Tue Feb 25 2025
+! Last configuration change at 13:29:58 UTC Tue Mar 4 2025 by admin
 !
 version 15.2
+service config
 no service pad
 service timestamps debug datetime msec
 service timestamps log datetime localtime
@@ -13,6 +14,7 @@ hostname HK-Sw1
 boot-start-marker
 boot-end-marker
 !
+enable secret 9 $9$onxmZ5r0X.hRt0$yNh9wRfxRTj2cC49WOdcIx4zIgyY4zhPFJvy3njxhOo
 !
 username admin secret 9 $9$lP1ecWdhoax0si$2Z.SigHDAZTIocEz5qglnOvW78AlNMBugDkypI2hCpI
 no aaa new-model
@@ -22,13 +24,41 @@ system mtu routing 1500
 !
 no ip domain-lookup
 ip domain-name kvistco.mc
+ipv6 unicast-routing
 !
 !
 !
 !
 !
 !
+crypto pki trustpoint TP-self-signed-2226598656
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2226598656
+ revocation-check none
+ rsakeypair TP-self-signed-2226598656
 !
+!
+crypto pki certificate chain TP-self-signed-2226598656
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32323236 35393836 3536301E 170D3235 30333034 31343530 
+  30305A17 0D333030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 32323635 
+  39383635 3630819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100CABF A588D632 0C7AB24B E3418082 C97EA8DB 8530C9B5 8A303F3D F0739FEF 
+  10A165C9 AA6D89FD 8291356E 1A1CA77A 3062CB70 1BF8A560 4D800E3C B02733CA 
+  6AED575C 08E76793 58767E6B 68B67018 27168655 FB8B16B7 5B4F145A 4DACB97B 
+  A41CA4E4 4A4809C5 0403A873 76BD7160 3D23835D 85446A99 17B5780A E8E30508 
+  BDF50203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 14EA6945 183B2C74 824FBC1D 1603A5B0 9BC74C21 EB301D06 
+  03551D0E 04160414 EA694518 3B2C7482 4FBC1D16 03A5B09B C74C21EB 300D0609 
+  2A864886 F70D0101 05050003 818100B9 4583A00A 2E2EA180 F60FCF08 98285AE9 
+  3D4D6939 857779C5 7A6EA98B E19E29E7 3B3D97C0 7AAEF909 4366522B 11BD66E3 
+  869D0005 55FAD017 B098E685 FB84A410 927ED61E 7D549264 8D6A9303 F02FE0F7 
+  A47614E6 DD3B2713 B8838F62 0535613D A46434D2 0BFC81C0 6950DC79 5017F53C 
+  F03DD1B3 CC4D8E4F 192CC173 3833DE
+  	quit
 !
 spanning-tree mode rapid-pvst
 spanning-tree portfast edge default
@@ -36,6 +66,7 @@ spanning-tree portfast edge bpduguard default
 spanning-tree extend system-id
 !
 vlan internal allocation policy ascending
+no cdp run
 !
 !
 !
@@ -227,9 +258,12 @@ interface GigabitEthernet1/0/28
 !
 interface Vlan1
  no ip address
+ shutdown
 !
 interface Vlan110
  ip address 10.100.0.11 255.255.255.224
+ ipv6 address FE80::11 link-local
+ ipv6 address 2001:CAFE:2025:110::11/64
 !
 ip default-gateway 10.100.0.1
 ip http server
@@ -238,6 +272,7 @@ ip ssh version 2
 !
 logging origin-id hostname
 logging host 10.100.0.16
+ipv6 route ::/0 Vlan110 FE80::110
 !
 !
 banner motd  Unautorized access is prohibited!
@@ -251,4 +286,8 @@ line vty 5 15
  login local
  transport input ssh
 !
+ntp authentication-key 10 md5 130B030200091D3A2336292030 7
+ntp authenticate
+ntp trusted-key 10
+ntp server 200.100.0.2 key 10
 end

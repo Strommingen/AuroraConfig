@@ -1,11 +1,11 @@
 
 !
-! Last configuration change at 14:58:01 UTC Tue Feb 25 2025
+! Last configuration change at 15:32:27 UTC Tue Mar 4 2025 by fkadmin1
 !
 version 15.2
 no service pad
 service timestamps debug datetime msec
-service timestamps log datetime msec
+service timestamps log datetime localtime
 no service password-encryption
 !
 hostname FK-Sw2
@@ -16,21 +16,70 @@ boot-end-marker
 enable secret 9 $9$a1vX7iLiX4UWoa$.IRtmg.txzrfN5l3.QY6IwJstIvarXpEdGYFIRB65z.
 !
 username admin secret 9 $9$Y0LsyTv.FTfS3E$63HNC/xOrM1IN4s9H1KzHW.Eb8Dk5LeUIshbrxSiBQ2
-no aaa new-model
+username fkadmin1 common-criteria-policy policy1 secret 9 $9$R/rn5p1OaVIsJZ$98Mz3FtagHDpoADl01wd/ScOhEBbirwEjhAY.t1iHFA
+aaa new-model
+!
+!
+aaa authentication login default local-case
+!
+aaa common-criteria policy policy1
+ min-length 12
+ max-length 127
+ numeric-count 1
+ upper-case 1
+ lower-case 1
+ special-case 1
+ char-changes 1
+!
+!
+!
+!
+!
+!
+aaa session-id common
 switch 1 provision c1000-24t-4g-l
 system mtu routing 1500
 !
 !
+ip dhcp snooping
 no ip domain-lookup
 ip domain-name kvistco.mc
 login block-for 120 attempts 3 within 60
+ipv6 unicast-routing
 !
 !
 !
 !
 !
 !
+crypto pki trustpoint TP-self-signed-405209472
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-405209472
+ revocation-check none
+ rsakeypair TP-self-signed-405209472
 !
+!
+crypto pki certificate chain TP-self-signed-405209472
+ certificate self-signed 01
+  30820229 30820192 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 34303532 30393437 32301E17 0D323530 33303430 37323733 
+  355A170D 33303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3430 35323039 
+  34373230 819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100 
+  B0EE6AD2 C9BE35A7 3DC921DA 6A784982 39552207 D64DDDFA 38D82532 1CA12F33 
+  CA3448E2 BF81327B 821D5459 87EFB207 93066363 B34FFF01 33073041 25CD9170 
+  BD38DFFA 418147B8 B4125089 8E16F3AD 2B38F8B6 C08460F1 3FC69D6A 53D59A9F 
+  8167AB25 9A818159 3DA3307A AEA23C02 3FFB1142 2FE637CB 740341C1 03148DAD 
+  02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 0603551D 
+  23041830 168014B5 BDD6C35C 44F97802 9E109A4F CB2235D0 E249E430 1D060355 
+  1D0E0416 0414B5BD D6C35C44 F978029E 109A4FCB 2235D0E2 49E4300D 06092A86 
+  4886F70D 01010505 00038181 007FE24D D28DE3AE F8CDA68C 72EC7943 456D9F92 
+  A9A9DDF6 D4074619 0BA95D2A 82813E8F B81CD102 51249989 4B4523D4 816B4443 
+  99425F4F 1DBCA220 6E6706D7 3FEB860C 43D4870F 9BB2548B FC04F69B 4BC23BA4 
+  1317BAA8 B777A685 CCB4BCCC 1163D0E4 35E32B88 7B1B58DE 4F3C9E53 C09376AD 
+  4FFDCB95 9EAF3262 D0971DE9 37
+  	quit
 !
 spanning-tree mode rapid-pvst
 spanning-tree portfast edge default
@@ -65,6 +114,7 @@ interface GigabitEthernet1/0/1
  switchport mode trunk
  switchport nonegotiate
  channel-group 1 mode desirable
+ ip dhcp snooping trust
 !
 interface GigabitEthernet1/0/2
  switchport trunk allowed vlan 210,220,230,240,250,999
@@ -72,6 +122,7 @@ interface GigabitEthernet1/0/2
  switchport mode trunk
  switchport nonegotiate
  channel-group 1 mode desirable
+ ip dhcp snooping trust
 !
 interface GigabitEthernet1/0/3
  switchport trunk allowed vlan 210,220,230,240,250,999
@@ -79,6 +130,7 @@ interface GigabitEthernet1/0/3
  switchport mode trunk
  switchport nonegotiate
  channel-group 3 mode desirable
+ ip dhcp snooping trust
 !
 interface GigabitEthernet1/0/4
  switchport trunk allowed vlan 210,220,230,240,250,999
@@ -86,148 +138,178 @@ interface GigabitEthernet1/0/4
  switchport mode trunk
  switchport nonegotiate
  channel-group 3 mode desirable
+ ip dhcp snooping trust
 !
 interface GigabitEthernet1/0/5
  description Connecting to FK-AP-WH
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/6
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/7
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/8
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/9
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/10
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/11
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/12
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/13
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/14
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/15
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/16
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/17
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/18
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/19
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/20
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/21
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/22
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/23
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/24
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/25
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/26
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/27
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface GigabitEthernet1/0/28
  description Unused ports
  switchport access vlan 888
  switchport mode access
  shutdown
+ ip dhcp snooping limit rate 6
 !
 interface Vlan1
  no ip address
@@ -235,11 +317,18 @@ interface Vlan1
 !
 interface Vlan210
  ip address 10.200.0.12 255.255.255.224
+ ipv6 address FE80::12 link-local
+ ipv6 address 2001:CAFE:2025:210::12/64
 !
 ip default-gateway 10.200.0.1
 ip http server
 ip http secure-server
 ip ssh version 2
+!
+logging origin-id hostname
+logging host 10.100.0.16
+ipv6 route ::/0 Vlan210 FE80::210
+!
 !
 !
 !
@@ -249,10 +338,8 @@ line con 0
  password Cisco123456!
  logging synchronous
 line vty 0 4
- login local
  transport input ssh
 line vty 5 15
- login local
  transport input ssh
 !
 ntp authentication-key 10 md5 151C1F1C0F2F32342021343116 7
