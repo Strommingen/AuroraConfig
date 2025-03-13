@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 14:46:12 UTC Tue Mar 4 2025 by admin
+! Last configuration change at 15:24:47 UTC Wed Mar 12 2025 by admin
 !
 version 17.3
 service timestamps debug datetime msec
@@ -16,9 +16,30 @@ boot-start-marker
 boot-end-marker
 !
 !
-enable secret 9 $9$577EzPT/G0xgDE$r5HxHBEpfewFkx4cUh.ydO0MxwIbDt3OkcSLkcfdDGM
+enable secret 9 $9$F2mEtfhXDhO1AE$ky1CmHRIMB2eh/6rgBzuLlu9qP4ke91tcfN8Bg5UYvQ
 !
-no aaa new-model
+aaa new-model
+aaa local authentication attempts max-fail 3
+!
+!
+aaa authentication login default local-case enable
+aaa authentication login SSH-LOGIN local-case
+!
+aaa common-criteria policy policy1
+ min-length 12
+ max-length 30
+ numeric-count 1
+ upper-case 1
+ lower-case 1
+ special-case 1
+ char-changes 1
+!
+!
+!
+!
+!
+!
+aaa session-id common
 !
 !
 !
@@ -46,6 +67,7 @@ ip dhcp pool vlan130_pool
 !
 !
 !
+login block-for 60 attempts 3 within 120
 login on-success log
 ipv6 unicast-routing
 !
@@ -146,7 +168,7 @@ diagnostic bootup level minimal
 !
 spanning-tree extend system-id
 !
-username admin secret 9 $9$RVAHWrvKFAAT4k$jm6RihFa113mL2IEyo9eKlKUEpmA9MervMsNjM3gHY.
+username admin common-criteria-policy policy1 secret 9 $9$Lhj3wl5wMvf6IE$Y0yNUWfZFUfoiMX.T5D0wbghIjGrl4IyKzrcvpKPUgM
 !
 redundancy
  mode none
@@ -179,13 +201,19 @@ interface Loopback0
 interface GigabitEthernet0/0/0
  no ip address
  negotiation auto
+ ipv6 enable
 !
 interface GigabitEthernet0/0/0.110
  description VLAN 110
  encapsulation dot1Q 110
  ip address 10.100.0.2 255.255.255.224
+ standby version 2
  standby 110 ip 10.100.0.1
  standby 110 preempt
+ standby 111 ipv6 FE80::110
+ standby 111 ipv6 2001:CAFE:2025:110::1/64
+ standby 111 priority 110
+ standby 111 preempt
  ipv6 address FE80::112 link-local
  ipv6 address 2001:CAFE:2025:110::2/64
 !
@@ -193,8 +221,13 @@ interface GigabitEthernet0/0/0.120
  description VLAN 120
  encapsulation dot1Q 120
  ip address 10.100.0.34 255.255.255.224
+ standby version 2
  standby 120 ip 10.100.0.33
  standby 120 preempt
+ standby 121 ipv6 FE80::120
+ standby 121 ipv6 2001:CAFE:2025:120::1/64
+ standby 121 priority 110
+ standby 121 preempt
  ipv6 address FE80::122 link-local
  ipv6 address 2001:CAFE:2025:120::2/64
 !
@@ -205,16 +238,24 @@ interface GigabitEthernet0/0/0.130
  standby version 2
  standby 130 ip 10.100.0.65
  standby 130 preempt
- standby 131 ipv6 FE80::1
+ standby 131 ipv6 FE80::130
+ standby 131 ipv6 2001:CAFE:2025:130::1/64
+ standby 131 priority 110
  standby 131 preempt
  ipv6 address FE80::132 link-local
  ipv6 address 2001:CAFE:2025:130::2/64
 !
 interface GigabitEthernet0/0/1
  ip address 192.168.0.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 101F5B4A5142
  negotiation auto
  ipv6 address FE80::1 link-local
  ipv6 address 2003:1111:2222:3333::1/64
+!
+router ospf 101
+ network 10.100.0.0 0.0.0.255 area 0
+ network 192.168.0.0 0.0.0.255 area 0
 !
 ip default-gateway 192.168.0.1
 ip http server
@@ -233,22 +274,24 @@ ipv6 route ::/0 2003:1111:2222:3333::2
 !
 !
 !
+!
+!
 control-plane
 !
 banner motd Unauthorized access is prohibited!
 !
 line con 0
  password 7 13061E010803557878707D6574
- login
+ logging synchronous
  transport input none
  stopbits 1
 line aux 0
  stopbits 1
 line vty 0 4
- login local
+ login authentication SSH-LOGIN
  transport input ssh
 line vty 5 15
- login
+ login authentication SSH-LOGIN
  transport input ssh
 !
 call-home

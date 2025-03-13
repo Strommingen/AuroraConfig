@@ -1,35 +1,89 @@
 
 !
-! Last configuration change at 13:13:39 UTC Sat Dec 31 1994
+! Last configuration change at 12:33:17 UTC Wed Mar 12 2025 by admin
 !
 version 15.2
+service config
 no service pad
 service timestamps debug datetime msec
 service timestamps log datetime localtime
 no service password-encryption
 !
-hostname HK-SW2
+hostname HK-Sw2
 !
 boot-start-marker
 boot-end-marker
 !
+enable secret 9 $9$zbzBqk0EMkjyWZ$qo0FqulTcx6Ux8C3/umJp4DCOblmhB0CKsgazJNA.B6
 !
-no aaa new-model
+username admin common-criteria-policy policy1 secret 9 $9$Dy/fo4GvkJV.0/$YWLA39sKW6I0shnv9a6qLEiXMr/syHoGdLZ1exS1xo.
+aaa new-model
+aaa local authentication attempts max-fail 3
+!
+!
+aaa authentication login default local-case enable
+aaa authentication login SSH-LOGIN local-case
+!
+aaa common-criteria policy policy1
+ min-length 12
+ max-length 30
+ numeric-count 1
+ upper-case 1
+ lower-case 1
+ special-case 1
+ char-changes 4
+!
+!
+!
+!
+!
+!
+aaa session-id common
 switch 1 provision c1000-24t-4g-l
 system mtu routing 1500
 ip routing
 !
 !
 no ip domain-lookup
+login block-for 60 attempts 3 within 120
 !
 !
 !
 !
 !
 !
+crypto pki trustpoint TP-self-signed-2682787328
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2682787328
+ revocation-check none
+ rsakeypair TP-self-signed-2682787328
 !
+!
+crypto pki certificate chain TP-self-signed-2682787328
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32363832 37383733 3238301E 170D3235 30333132 30383337 
+  32365A17 0D333030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 36383237 
+  38373332 3830819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100AC0B D5FDC868 665F45A1 BF749969 4C47B08A 63673DF6 E6DFD664 BE8AA1F2 
+  0DEE2C43 91F95923 6524EC9D 02D6CB36 A4CF7EBF 0563E891 8DFED8F0 25504269 
+  DCDBAEA1 89D8EA29 6FB1C47E D1570491 35AF6616 00972229 4B33BB4E 7F833019 
+  026AA65F BBDBA518 4D8824EC 78AB15C3 A58A62C1 49F1915B 8F6609BC C7535823 
+  D0910203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 144F46E0 1A89753B 5D1097E0 7FCBC6B9 D270AE94 6D301D06 
+  03551D0E 04160414 4F46E01A 89753B5D 1097E07F CBC6B9D2 70AE946D 300D0609 
+  2A864886 F70D0101 05050003 81810058 0B6B972E F75583F5 32CB13D2 059D642D 
+  249AAA34 150BDB50 1009F9FF 979841C0 4B2094CB A70E3787 B8C9CC0C DD717D8E 
+  4F46E9A4 68BC2627 4703003B 15EF99C2 F032DBCF F9F74FEA 91BF8CED FCCC238D 
+  E39B3AD2 8120820E E9663D27 2228B762 444577ED 5A648E1B 5E5FC06A 646C2F96 
+  9241BC69 E0C13A8C F2DD1E76 F320C6
+  	quit
 !
 spanning-tree mode rapid-pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
 spanning-tree extend system-id
 !
 vlan internal allocation policy ascending
@@ -82,15 +136,18 @@ interface GigabitEthernet1/0/4
  channel-group 3 mode desirable
 !
 interface GigabitEthernet1/0/5
- switchport access vlan 130
+ description Connection to HK-AP-Sales
+ switchport access vlan 120
  switchport mode access
  spanning-tree portfast edge
  spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/6
- switchport access vlan 888
+ description Connection to HK-AP-Guest
+ switchport access vlan 130
  switchport mode access
- shutdown
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
 !
 interface GigabitEthernet1/0/7
  switchport access vlan 888
@@ -178,7 +235,8 @@ interface GigabitEthernet1/0/23
  shutdown
 !
 interface GigabitEthernet1/0/24
- switchport trunk allowed vlan 110,120,130,999
+ description Connection to HK-R2
+ switchport trunk allowed vlan 110,120,130
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
@@ -205,6 +263,7 @@ interface GigabitEthernet1/0/28
 !
 interface Vlan1
  no ip address
+ shutdown
 !
 interface Vlan110
  ip address 10.100.0.12 255.255.255.224
@@ -218,13 +277,26 @@ interface Vlan130
 ip default-gateway 10.100.0.1
 ip http server
 ip http secure-server
+ip ssh version 2
 !
 logging origin-id hostname
 logging host 10.100.0.16
 !
 !
 !
-line con 0
-line vty 5 15
 !
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ login authentication SSH-LOGIN
+ transport input ssh
+line vty 5 15
+ login authentication SSH-LOGIN
+ transport input ssh
+!
+ntp authentication-key 10 md5 1419061B0701333B2C3A322627 7
+ntp authenticate
+ntp trusted-key 10
+ntp server 200.100.0.2 key 10
 end
