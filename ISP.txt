@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 16:53:15 UTC Tue Mar 4 2025
+! Last configuration change at 17:43:02 UTC Wed Mar 12 2025 by admin
 !
 version 17.3
 service timestamps debug datetime msec
@@ -14,8 +14,30 @@ boot-start-marker
 boot-end-marker
 !
 !
+enable secret 9 $9$P9zSvquOWDBZhU$f4WyhBefhfmpbAg9Qi1B71ozbPOTYxeN5uG/eQT/b7.
 !
-no aaa new-model
+aaa new-model
+aaa local authentication attempts max-fail 3
+!
+!
+aaa authentication login default local-case enable
+aaa authentication login SSH-LOGIN local-case
+!
+aaa common-criteria policy policy1
+ min-length 12
+ max-length 25
+ numeric-count 1
+ upper-case 1
+ lower-case 1
+ special-case 1
+ char-changes 1
+!
+!
+!
+!
+!
+!
+aaa session-id common
 clock timezone UTC 1 0
 !
 !
@@ -25,9 +47,11 @@ clock timezone UTC 1 0
 !
 !
 no ip domain lookup
+ip domain name bahnhof.net
 !
 !
 !
+login block-for 60 attempts 3 within 120
 login on-success log
 ipv6 unicast-routing
 !
@@ -95,6 +119,7 @@ diagnostic bootup level minimal
 !
 spanning-tree extend system-id
 !
+username admin common-criteria-policy policy1 secret 9 $9$bLUAn64/zSvB3k$oxMTCa.Me5v0vSEzpd9M9YIFATh0zYAlqiaZ31HCtr6
 !
 redundancy
  mode none
@@ -120,6 +145,9 @@ redundancy
 ! 
 !
 !
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.0
+!
 interface GigabitEthernet0/0/0
  ip address 200.100.0.2 255.255.255.252
  negotiation auto
@@ -132,16 +160,18 @@ interface GigabitEthernet0/0/1
  ipv6 address FE80::1000 link-local
  ipv6 address 2001:1111:2222:4444::1/64
 !
+router ospf 101
+ network 200.0.0.0 0.255.255.255 area 0
+!
 no ip http server
 ip http secure-server
 ip forward-protocol nd
-ip route 10.100.0.0 255.255.255.0 200.100.0.1
-ip route 10.200.0.0 255.255.255.0 200.100.0.6
+ip ssh version 2
 !
 !
 !
-ipv6 route 2001:CAFE:2025:110::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:110::/64 GigabitEthernet0/0/0
+ipv6 route 2001:CAFE:2025:110::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:120::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:130::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:210::/64 2001:1111:2222:4444::2
@@ -149,6 +179,8 @@ ipv6 route 2001:CAFE:2025:220::/64 2001:1111:2222:4444::2
 ipv6 route 2001:CAFE:2025:230::/64 2001:1111:2222:4444::2
 ipv6 route 2001:CAFE:2025:240::/64 2001:1111:2222:4444::2
 ipv6 route 2001:CAFE:2025:250::/64 2001:1111:2222:4444::2
+!
+!
 !
 !
 !
@@ -162,7 +194,10 @@ line con 0
 line aux 0
  stopbits 1
 line vty 0 4
- login
+ login authentication SSH-LOGIN
+ transport input ssh
+line vty 5 15
+ login authentication SSH-LOGIN
  transport input ssh
 !
 ntp authentication-key 10 md5 11070D151C17121C0C382A372D 7
