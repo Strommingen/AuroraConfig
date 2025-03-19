@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 18:07:36 UTC Mon Mar 17 2025 by admin
+! Last configuration change at 08:39:04 UTC Tue Mar 18 2025
 !
 version 17.3
 service timestamps debug datetime msec
@@ -111,7 +111,7 @@ crypto pki certificate chain TP-self-signed-1935656628
 !
 !
 no license feature hseck9
-license udi pid ISR4221/K9 sn FGL2721LKSE
+license udi pid ISR4221/K9 sn FGL2721LKSU
 license boot level securityk9
 memory free low-watermark processor 69214
 !
@@ -167,8 +167,8 @@ ip ssh version 2
 !
 !
 !
-ipv6 route 2001:CAFE:2025:110::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:110::/64 GigabitEthernet0/0/0
+ipv6 route 2001:CAFE:2025:110::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:120::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:130::/64 2001:1111:2222:3333::2
 ipv6 route 2001:CAFE:2025:210::/64 2001:1111:2222:4444::2

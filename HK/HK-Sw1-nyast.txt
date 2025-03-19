@@ -1,0 +1,437 @@
+
+!
+! Last configuration change at 13:00:39 UTC Tue Mar 18 2025 by admin
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime
+service password-encryption
+!
+hostname HK-Sw1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 9 $9$onxmZ5r0X.hRt0$yNh9wRfxRTj2cC49WOdcIx4zIgyY4zhPFJvy3njxhOo
+!
+username admin common-criteria-policy policy1 secret 9 $9$eRi0eDBSKF.kCZ$pTx0ZyTCkL55fZAqQKQUC7JV5tJBduQhcPd5BIftS8g
+aaa new-model
+aaa local authentication attempts max-fail 3
+!
+!
+aaa authentication login default local-case enable
+aaa authentication login SSH-LOGIN local-case
+!
+aaa common-criteria policy policy1
+ min-length 12
+ max-length 30
+ numeric-count 1
+ upper-case 1
+ lower-case 1
+ special-case 1
+ char-changes 1
+!
+!
+!
+!
+!
+!
+aaa session-id common
+switch 1 provision c1000-24t-4g-l
+system mtu routing 1500
+!
+!
+no ip domain-lookup
+ip domain-name kvistco.mc
+login block-for 60 attempts 3 within 120
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2226598656
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2226598656
+ revocation-check none
+ rsakeypair TP-self-signed-2226598656
+!
+!
+crypto pki certificate chain TP-self-signed-2226598656
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32323236 35393836 3536301E 170D3235 30333034 31343530 
+  30305A17 0D333030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 32323635 
+  39383635 3630819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100CABF A588D632 0C7AB24B E3418082 C97EA8DB 8530C9B5 8A303F3D F0739FEF 
+  10A165C9 AA6D89FD 8291356E 1A1CA77A 3062CB70 1BF8A560 4D800E3C B02733CA 
+  6AED575C 08E76793 58767E6B 68B67018 27168655 FB8B16B7 5B4F145A 4DACB97B 
+  A41CA4E4 4A4809C5 0403A873 76BD7160 3D23835D 85446A99 17B5780A E8E30508 
+  BDF50203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 14EA6945 183B2C74 824FBC1D 1603A5B0 9BC74C21 EB301D06 
+  03551D0E 04160414 EA694518 3B2C7482 4FBC1D16 03A5B09B C74C21EB 300D0609 
+  2A864886 F70D0101 05050003 818100B9 4583A00A 2E2EA180 F60FCF08 98285AE9 
+  3D4D6939 857779C5 7A6EA98B E19E29E7 3B3D97C0 7AAEF909 4366522B 11BD66E3 
+  869D0005 55FAD017 B098E685 FB84A410 927ED61E 7D549264 8D6A9303 F02FE0F7 
+  A47614E6 DD3B2713 B8838F62 0535613D A46434D2 0BFC81C0 6950DC79 5017F53C 
+  F03DD1B3 CC4D8E4F 192CC173 3833DE
+  	quit
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+spanning-tree vlan 110,120,130 priority 24576
+!
+vlan internal allocation policy ascending
+no cdp run
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Port-channel2
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface GigabitEthernet1/0/1
+ description Etherchannel to HK-Sw2
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 1 mode desirable
+!
+interface GigabitEthernet1/0/2
+ description Etherchannel to HK-Sw2
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 1 mode desirable
+!
+interface GigabitEthernet1/0/3
+ description Etherchannel to HK-Sw3
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 2 mode desirable
+!
+interface GigabitEthernet1/0/4
+ description Etherchannel to HK-Sw3
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 2 mode desirable
+!
+interface GigabitEthernet1/0/5
+ switchport access vlan 120
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
+!
+interface GigabitEthernet1/0/6
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/7
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/8
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/9
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/10
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/11
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/12
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/13
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/14
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/15
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/16
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/17
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/18
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/19
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/20
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/21
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/22
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/23
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/24
+ description Connection to HK-R1
+ switchport trunk allowed vlan 110,120,130
+ switchport trunk native vlan 999
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/25
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/26
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/27
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface GigabitEthernet1/0/28
+ description Unused ports assigned to BlackHole
+ switchport access vlan 888
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan110
+ ip address 10.100.0.11 255.255.255.224
+ ipv6 address FE80::11 link-local
+ ipv6 address 2001:CAFE:2025:110::11/64
+!
+ip default-gateway 10.100.0.1
+ip http server
+ip http secure-server
+ip ssh version 2
+!
+logging origin-id hostname
+logging host 10.100.0.16
+ipv6 route ::/0 Vlan110 FE80::110
+!
+!
+!
+!
+banner motd  Unautorized access is prohibited!
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ login authentication SSH-LOGIN
+ transport input ssh
+line vty 5 15
+ login authentication SSH-LOGIN
+ transport input ssh
+!
+ntp authentication-key 10 md5 12171107190E15142239253B36 7
+ntp authenticate
+ntp trusted-key 10
+ntp server 200.100.0.2 key 10
+end

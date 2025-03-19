@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 16:36:33 UTC Wed Mar 12 2025 by admin
+! Last configuration change at 19:49:42 UTC Tue Mar 18 2025 by admin
 !
 version 15.2
 no service pad
@@ -84,6 +84,7 @@ crypto pki certificate chain TP-self-signed-2226599296
   	quit
 !
 spanning-tree mode rapid-pvst
+spanning-tree loopguard default
 spanning-tree portfast edge default
 spanning-tree portfast edge bpduguard default
 spanning-tree extend system-id
@@ -95,12 +96,6 @@ no cdp run
 !
 !
 !
-!
-interface Port-channel1
- switchport trunk allowed vlan 210,220,230,240,250,999
- switchport trunk native vlan 999
- switchport mode trunk
- switchport nonegotiate
 !
 interface Port-channel2
  description Etherchannel to FK-Sw1
@@ -121,16 +116,14 @@ interface GigabitEthernet1/0/1
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
- channel-group 1 mode desirable
- ip dhcp snooping trust
+ channel-group 3 mode desirable
 !
 interface GigabitEthernet1/0/2
  switchport trunk allowed vlan 210,220,230,240,250,999
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
- channel-group 1 mode desirable
- ip dhcp snooping trust
+ channel-group 3 mode desirable
 !
 interface GigabitEthernet1/0/3
  switchport trunk allowed vlan 210,220,230,240,250,999
@@ -154,8 +147,8 @@ interface GigabitEthernet1/0/5
  switchport mode access
  switchport port-security maximum 3
  switchport port-security mac-address sticky
- switchport port-security mac-address sticky 0015.5d9e.0000
- switchport port-security mac-address sticky 2088.10b4.b952
+ switchport port-security mac-address sticky 0015.5d23.6a01
+ switchport port-security mac-address sticky 00be.4393.e10b
  switchport port-security aging time 10
  switchport port-security aging type inactivity
  switchport port-security
@@ -167,8 +160,8 @@ interface GigabitEthernet1/0/6
  switchport mode access
  switchport port-security maximum 3
  switchport port-security mac-address sticky
- switchport port-security mac-address sticky 0015.5d9e.0000
- switchport port-security mac-address sticky 2088.10b4.b952
+ switchport port-security mac-address sticky 0015.5d23.b401
+ switchport port-security mac-address sticky 00be.4393.de02
  switchport port-security aging time 10
  switchport port-security aging type inactivity
  switchport port-security
@@ -223,8 +216,6 @@ interface GigabitEthernet1/0/12
  switchport mode access
  switchport port-security maximum 3
  switchport port-security mac-address sticky
- switchport port-security mac-address sticky 0015.5d85.b600
- switchport port-security mac-address sticky 2088.10b4.ba89
  switchport port-security aging time 10
  switchport port-security aging type inactivity
  switchport port-security
@@ -372,11 +363,9 @@ line con 0
  password 7 1531021F07257A767B67607452
  logging synchronous
 line vty 0 4
- access-class SSH-ACCESS in
  login authentication SSH-LOGIN
  transport input ssh
 line vty 5 15
- access-class SSH-ACCESS in
  login authentication SSH-LOGIN
  transport input ssh
 !

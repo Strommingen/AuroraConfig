@@ -1,0 +1,315 @@
+
+!
+! Last configuration change at 15:48:35 UTC Tue Mar 18 2025 by admin
+!
+version 17.3
+service timestamps debug datetime msec
+service timestamps log datetime localtime
+service password-encryption
+service call-home
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+!
+hostname HK-R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 9 $9$F2mEtfhXDhO1AE$ky1CmHRIMB2eh/6rgBzuLlu9qP4ke91tcfN8Bg5UYvQ
+!
+aaa new-model
+aaa local authentication attempts max-fail 3
+!
+!
+aaa authentication login default local-case enable
+aaa authentication login SSH-LOGIN local-case
+!
+aaa common-criteria policy policy1
+ min-length 12
+ max-length 30
+ numeric-count 1
+ upper-case 1
+ lower-case 1
+ special-case 1
+ char-changes 1
+!
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name kvistco.mc
+ip dhcp excluded-address 10.100.0.1 10.100.0.3
+ip dhcp excluded-address 10.100.0.11 10.100.0.13
+ip dhcp excluded-address 10.100.0.15 10.100.0.16
+ip dhcp excluded-address 10.100.0.65 10.100.0.69
+ip dhcp excluded-address 10.100.0.33 10.100.0.37
+!
+ip dhcp pool vlan120_pool
+ network 10.100.0.32 255.255.255.224
+ domain-name 120.kvistco.mc
+ default-router 10.100.0.33 
+!
+ip dhcp pool vlan130_pool
+ network 10.100.0.64 255.255.255.240
+ domain-name 130.kvistco.mc
+ default-router 10.100.0.65 
+!
+!
+!
+login block-for 60 attempts 3 within 120
+login on-success log
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+multilink bundle-name authenticated
+no device-tracking logging theft
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1135098972
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1135098972
+ revocation-check none
+ rsakeypair TP-self-signed-1135098972
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+!
+!
+crypto pki certificate chain TP-self-signed-1135098972
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31313335 30393839 3732301E 170D3235 30323235 30383039 
+  32355A17 0D333530 32323530 38303932 355A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 31333530 
+  39383937 32308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 0100B236 099974B1 4B836105 35E2E161 EDE73BD3 92C588FF 5763BB03 
+  51CC288A 7116F186 A509A2BB AB0468F0 E60DDFB2 972F4D1A 768DE271 015DC304 
+  83877DAB 44AC3293 E70C1EFC B0DFC4C1 6124639C 410410B3 61959150 E598805C 
+  296F04DB 48EABB95 E7B2C634 7BC07011 96CD4EE0 3B90A440 61E39BDD 9FD1B047 
+  96E3F97A A7E9DC12 0BBA3E42 442D4EC5 562D851B 1E3FFCEC 259B4685 F2E22CDB 
+  580C2947 B2C34B34 416C8640 F3A5AE0A 4B08435C BE60995B E5304A71 A645D89C 
+  DAE778D5 66FEFBB9 3CCD059C 5CEECF41 4A2F1835 E050DB0C FFDECE7B DD77A829 
+  2AFC9156 FA7164FD 86013D49 889199CC 09F248A8 6E8C3D33 D390454F BCCAD91B 
+  1F59BBD4 33470203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 
+  301F0603 551D2304 18301680 14D8F4DC 6999993E AF754532 6E1701D6 2E786CDE 
+  17301D06 03551D0E 04160414 D8F4DC69 99993EAF 7545326E 1701D62E 786CDE17 
+  300D0609 2A864886 F70D0101 05050003 82010100 3FD6D330 AEAB4DCF 96ACA558 
+  3B07E111 6D1466FF 6684D1C2 49EB0559 5499F47A 562E5103 B390ED49 1A2FAEC3 
+  61751CE8 064EB241 733CB629 2DA03F51 AEF1D2EB 1DD98C15 96917696 8C801650 
+  1F4D26E5 C41A9F82 61853EB0 8E70C49F 048EEC97 8CB7D37E D5719F7A 07713E7D 
+  1EB7AE22 97F50A1C 300D9BCC 7BBA5680 FBBCE369 2B909D20 ED7B1786 F2DA2695 
+  E005DE89 F9C221A9 54CCE6D9 6F95D506 EA934CC9 60B69B9D B26516B3 312CFBFB 
+  01891035 4150E842 A7106965 75F9DBE8 8C7DA4F2 34E116A4 E90942CA A1FB03C5 
+  819329BC 0F8A7F9B 0E0D8615 1A79622F 8DE3803B 8875AE01 0C5D6580 D6C435F5 
+  D7A8F75B C0C1F72E 225AC497 19AFA973 5D1B9F09
+  	quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  	quit
+!
+!
+no license feature hseck9
+license udi pid ISR4221/K9 sn FGL2721LKTN
+license boot level securityk9
+memory free low-watermark processor 69214
+!
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+username admin common-criteria-policy policy1 secret 9 $9$Lhj3wl5wMvf6IE$Y0yNUWfZFUfoiMX.T5D0wbghIjGrl4IyKzrcvpKPUgM
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ negotiation auto
+ ipv6 enable
+!
+interface GigabitEthernet0/0/0.110
+ description VLAN 110
+ encapsulation dot1Q 110
+ ip address 10.100.0.2 255.255.255.224
+ standby version 2
+ standby 110 ip 10.100.0.1
+ standby 110 preempt
+ standby 111 ipv6 FE80::110
+ standby 111 ipv6 2001:CAFE:2025:110::1/64
+ standby 111 priority 110
+ standby 111 preempt
+ ipv6 address FE80::112 link-local
+ ipv6 address 2001:CAFE:2025:110::2/64
+!
+interface GigabitEthernet0/0/0.120
+ description VLAN 120
+ encapsulation dot1Q 120
+ ip address 10.100.0.34 255.255.255.224
+ standby version 2
+ standby 120 ip 10.100.0.33
+ standby 120 preempt
+ standby 121 ipv6 FE80::120
+ standby 121 ipv6 2001:CAFE:2025:120::1/64
+ standby 121 priority 110
+ standby 121 preempt
+ ipv6 address FE80::122 link-local
+ ipv6 address 2001:CAFE:2025:120::2/64
+!
+interface GigabitEthernet0/0/0.130
+ description VLAN 130
+ encapsulation dot1Q 130
+ ip address 10.100.0.66 255.255.255.240
+ standby version 2
+ standby 130 ip 10.100.0.65
+ standby 130 preempt
+ standby 131 ipv6 FE80::130
+ standby 131 ipv6 2001:CAFE:2025:130::1/64
+ standby 131 priority 110
+ standby 131 preempt
+ ipv6 address FE80::132 link-local
+ ipv6 address 2001:CAFE:2025:130::2/64
+!
+interface GigabitEthernet0/0/1
+ ip address 192.168.0.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 13261E010803557878707D6574
+ ip ospf 101 area 0
+ negotiation auto
+ ipv6 address FE80::1 link-local
+ ipv6 address 2003:1111:2222:3333::1/64
+!
+router ospf 101
+ network 10.100.0.0 0.0.0.255 area 0
+ network 192.168.0.0 0.0.0.255 area 0
+!
+ip default-gateway 192.168.0.1
+ip http server
+ip http authentication local
+ip http secure-server
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 192.168.0.1
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0/1 192.168.0.1
+ip ssh version 2
+!
+!
+!
+logging origin-id hostname
+logging host 10.100.0.16
+ipv6 route ::/0 2003:1111:2222:3333::2
+!
+!
+!
+!
+!
+control-plane
+!
+banner motd Unauthorized access is prohibited!
+!
+line con 0
+ password 7 13061E010803557878707D6574
+ logging synchronous
+ transport input none
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login authentication SSH-LOGIN
+ transport input ssh
+line vty 5 15
+ login authentication SSH-LOGIN
+ transport input ssh
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+ntp authentication-key 10 md5 030A4F1B0D0A385C461B181612 7
+ntp authenticate
+ntp trusted-key 10
+ntp server 200.100.0.2 key 10
+!
+!
+!
+!
+!
+!
+end
