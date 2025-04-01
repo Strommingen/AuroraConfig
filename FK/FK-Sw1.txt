@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 16:04:21 UTC Wed Mar 12 2025 by admin
+! Last configuration change at 14:14:37 UTC Sun Nov 2 2025 by admin
 !
 version 15.2
 no service pad
@@ -18,6 +18,7 @@ enable secret 9 $9$8vyYyN9k5mXvHp$DvN5KZ9iDLvlOQn6HlUEUQem71taWT1iNlPB4h6qjxU
 username admin secret 9 $9$dlr0NnQQ1hnlLu$TPE2uF8Wb.nLOxmcZjNgh1gGgCdQisbgSxGrVCCvI3w
 username fkadmin1 common-criteria-policy policy1 secret 9 $9$q2PT.71h28odxO$jQNBFiFSJhQZVKsU2Q0cutxK0AI0BZCo5OxcApn7o/w
 aaa new-model
+aaa local authentication attempts max-fail 3
 !
 !
 aaa authentication login default local-case enable
@@ -42,6 +43,8 @@ switch 1 provision c1000-24t-4g-l
 system mtu routing 1500
 !
 !
+ip dhcp snooping vlan 220,230
+no ip dhcp snooping information option
 ip dhcp snooping
 no ip domain-lookup
 ip domain-name kvistco.mc
@@ -83,6 +86,7 @@ crypto pki certificate chain TP-self-signed-405209216
   	quit
 !
 spanning-tree mode rapid-pvst
+spanning-tree loopguard default
 spanning-tree portfast edge default
 spanning-tree portfast edge bpduguard default
 spanning-tree extend system-id
@@ -101,20 +105,24 @@ interface Port-channel1
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
 !
 interface Port-channel2
  switchport trunk allowed vlan 210,220,230,240,250,999
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
 !
 interface GigabitEthernet1/0/1
  switchport trunk allowed vlan 210,220,230,240,250,999
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
+ ip arp inspection limit rate 80
  channel-group 1 mode desirable
- ip dhcp snooping trust
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/2
  description Etherchannel to FK-Sw2
@@ -122,8 +130,10 @@ interface GigabitEthernet1/0/2
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
+ ip arp inspection limit rate 80
  channel-group 1 mode desirable
- ip dhcp snooping trust
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/3
  description Etherchannel to FK-Sw3
@@ -131,8 +141,10 @@ interface GigabitEthernet1/0/3
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
+ ip arp inspection limit rate 80
  channel-group 2 mode desirable
- ip dhcp snooping trust
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/4
  description Etherchannel to FK-Sw3
@@ -140,8 +152,10 @@ interface GigabitEthernet1/0/4
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
+ ip arp inspection limit rate 80
  channel-group 2 mode desirable
- ip dhcp snooping trust
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/5
  description Connected to FK-AP-Store
@@ -149,38 +163,44 @@ interface GigabitEthernet1/0/5
  switchport mode access
  switchport port-security maximum 3
  switchport port-security mac-address sticky
+ switchport port-security mac-address sticky 687f.7410.5d4c
  switchport port-security aging time 10
  switchport port-security aging type inactivity
  switchport port-security
- ip dhcp snooping limit rate 6
+ ip arp inspection limit rate 30
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/6
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/7
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/8
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/9
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/10
  description Connected to Management PC
@@ -188,137 +208,157 @@ interface GigabitEthernet1/0/10
  switchport mode access
  switchport port-security maximum 3
  switchport port-security mac-address sticky
- switchport port-security mac-address sticky 0015.5d26.5000
- switchport port-security mac-address sticky 2088.10b4.bf2c
+ switchport port-security mac-address sticky 0015.5d23.8300
+ switchport port-security mac-address sticky 00be.439a.152f
  switchport port-security aging time 10
  switchport port-security aging type inactivity
  switchport port-security
- ip dhcp snooping limit rate 6
+ ip arp inspection limit rate 30
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/11
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/12
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/13
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/14
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/15
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/16
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/17
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/18
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/19
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/20
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/21
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/22
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/23
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/24
  switchport trunk allowed vlan 210,220,230,240,250,999
  switchport trunk native vlan 999
  switchport mode trunk
+ ip arp inspection trust
+ ip dhcp snooping limit rate 30
  ip dhcp snooping trust
 !
 interface GigabitEthernet1/0/25
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/26
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/27
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/28
  description Unused ports
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
- ip dhcp snooping limit rate 6
+ ip dhcp snooping limit rate 30
 !
 interface Vlan1
  no ip address
@@ -337,9 +377,9 @@ ip http server
 ip http secure-server
 ip ssh version 2
 !
-ip access-list extended SSH-ACCESS
+ip access-list extended SSH_ACCESS
  permit tcp 10.200.0.0 0.0.0.31 any eq 22
- deny   tcp any any log
+ deny   tcp any any eq 22
 logging origin-id hostname
 logging host 10.100.0.16
 ipv6 route ::/0 Vlan210 FE80::210
@@ -347,17 +387,23 @@ ipv6 route ::/0 Vlan210 FE80::210
 !
 !
 !
+!
+ipv6 access-list SSH_ACCESS_IPV6
+ permit tcp 2001:CAFE:2025:210::/64 any eq 22
+ deny tcp any any eq 22
 banner motd  Unauthorized Access Is Prohibited! 
 !
 line con 0
  password 7 01300F175804575D72181B5F58
  logging synchronous
 line vty 0 4
- access-class SSH-ACCESS in
+ access-class SSH_ACCESS in
+ ipv6 access-class SSH_ACCESS_IPV6 in
  login authentication SSH-LOGIN
  transport input ssh
 line vty 5 15
- access-class SSH-ACCESS in
+ access-class SSH_ACCESS in
+ ipv6 access-class SSH_ACCESS_IPV6 in
  login authentication SSH-LOGIN
  transport input ssh
 !
