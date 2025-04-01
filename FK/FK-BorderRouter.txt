@@ -1,0 +1,590 @@
+Building configuration...
+
+Current configuration : 18625 bytes
+!
+! Last configuration change at 10:35:21 UTC Sun Nov 2 2025 by admin
+! NVRAM config last updated at 10:35:42 UTC Sun Nov 2 2025 by admin
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime localtime
+service password-encryption
+!
+hostname FK-BorderRouter
+!
+boot-start-marker
+boot-end-marker
+!
+!
+security passwords min-length 12
+enable secret 5 $1$PpcL$8Z31Jb/BNeI4YsXhXTk0n.
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip dhcp excluded-address 10.200.0.33 10.200.0.37
+ip dhcp excluded-address 10.200.0.65 10.200.0.68
+!
+ip dhcp pool vlan220_pool
+ network 10.200.0.32 255.255.255.224
+ domain-name 220.kvistco.mc
+ default-router 10.200.0.33
+!
+ip dhcp pool vlan230_pool
+ network 10.200.0.64 255.255.255.224
+ domain-name 230.kvistco.mc
+ default-router 10.200.0.65
+!
+!
+!
+no ip domain lookup
+ip domain name kvistco.mc
+ip multicast-routing
+ip cef
+login block-for 120 attempts 3 within 60
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+license udi pid CISCO2911/K9 sn FGL214981UY
+!
+!
+username admin secret 5 $1$0Yej$wX0zuxhQHLxUjwL0D.DBP.
+!
+redundancy
+!
+!
+!
+!
+no cdp run
+!
+ip ssh version 2
+!
+!
+crypto isakmp policy 110
+ encr aes 256
+ authentication pre-share
+ group 24
+ lifetime 3600
+crypto isakmp key 12345 address 200.100.0.1
+!
+!
+crypto ipsec transform-set FK-HK-SET esp-aes esp-sha-hmac
+ mode tunnel
+!
+crypto ipsec profile VPN-PROFILE
+ set transform-set FK-HK-SET
+!
+!
+!
+crypto map FK-HK-MAP 110 ipsec-isakmp
+ description VPN connection to HK
+ set peer 200.100.0.1
+ set transform-set FK-HK-SET
+ match address 110
+!
+!
+!
+!
+!
+interface Tunnel0
+ ip address 172.168.50.2 255.255.255.252
+ ip mtu 1400
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 7 1543595F507F
+ ip ospf network point-to-point
+ ip ospf 115 area 0
+ tunnel source GigabitEthernet0/1
+ tunnel destination 200.100.0.1
+ tunnel protection ipsec profile VPN-PROFILE
+!
+interface Embedded-Service-Engine0/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0
+ description Connecting to LAN FK
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.210
+ description Connecting to VLAN FK-Management
+ encapsulation dot1Q 210
+ ip address 10.200.0.1 255.255.255.224
+ ip access-group ACL_MANAGEMENT_INBOUND in
+ ip access-group ACL_MANAGEMENT_OUTBOUND out
+ ip nat inside
+ ip virtual-reassembly in
+ ipv6 address FE80::210 link-local
+ ipv6 address 2001:CAFE:2025:210::1/64
+!
+interface GigabitEthernet0/0.220
+ description Connecting to VLAN FK-Office
+ encapsulation dot1Q 220
+ ip address 10.200.0.33 255.255.255.224
+ ip access-group ACL_OFFICE_INBOUND in
+ ip access-group ACL_OFFICE_OUTBOUND out
+ ip nat inside
+ ip virtual-reassembly in
+ ipv6 address FE80::220 link-local
+ ipv6 address 2001:CAFE:2025:220::1/64
+!
+interface GigabitEthernet0/0.230
+ description Connecting to VLAN FK-StoreWH
+ encapsulation dot1Q 230
+ ip address 10.200.0.65 255.255.255.224
+ ip access-group ACL_STOREWH_INBOUND in
+ ip access-group ACL_STOREWH_OUTBOUND out
+ ip nat inside
+ ip virtual-reassembly in
+ ipv6 address FE80::230 link-local
+ ipv6 address 2001:CAFE:2025:230::1/64
+!
+interface GigabitEthernet0/0.240
+ no cdp enable
+!
+interface GigabitEthernet0/0.250
+ description Connecting to VLAN FK-Guest
+ encapsulation dot1Q 250
+ ip address 10.200.0.113 255.255.255.240
+ ip access-group ACL_GUEST_INBOUND in
+ ip access-group ACL_GUEST_OUTBOUND out
+ ip nat inside
+ ip virtual-reassembly in
+ ipv6 address FE80::250 link-local
+ ipv6 address 2001:CAFE:2025:250::1/64
+!
+interface GigabitEthernet0/1
+ ip address 200.100.0.6 255.255.255.252
+ ip access-group ACL_INTERNET_INBOUND in
+ ip access-group ACL_INTERNET_OUTBOUND out
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ ipv6 address FE80::2000 link-local
+ ipv6 address 2001:1111:2222:4444::2/64
+ crypto map FK-HK-MAP
+!
+interface GigabitEthernet0/2
+ ip address 10.200.0.97 255.255.255.240
+ ip access-group ACL_WEBSERVER_INBOUND in
+ ip access-group ACL_WEBSERVER_OUTBOUND out
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ ipv6 address FE80::240 link-local
+ ipv6 address 2001:CAFE:2025:240::1/64
+!
+interface Serial0/0/0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial0/1/0
+ no ip address
+ shutdown
+ clock rate 125000
+!
+interface Serial0/1/1
+ no ip address
+ shutdown
+ clock rate 125000
+!
+router ospf 115
+ network 10.200.0.0 0.0.0.255 area 0
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip nat inside source static tcp 10.200.0.98 80 interface GigabitEthernet0/1 80
+ip nat inside source static tcp 10.200.0.98 443 interface GigabitEthernet0/1 443
+ip nat inside source list 1 interface GigabitEthernet0/1 overload
+ip route 0.0.0.0 0.0.0.0 200.100.0.5
+ip route 200.100.0.1 255.255.255.255 200.100.0.5
+ip route 200.100.0.2 255.255.255.255 200.100.0.5
+!
+ip access-list extended ACL_GUEST_INBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allows hosts on Guest to access http/https
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ remark Allow DNS
+ permit udp any 10.200.0.112 0.0.0.15 eq domain
+ permit tcp any 10.200.0.112 0.0.0.15 eq domain
+ remark Denies all internal network to access the guest
+ deny   ip 10.200.0.0 0.0.255.255 10.200.0.112 0.0.0.15
+ deny   ip 10.100.0.0 0.0.255.255 10.200.0.112 0.0.0.15
+ remark Denies all ICMP packages
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_GUEST_OUTBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark permits guest wifi to establish a network connection
+ permit tcp any 10.200.0.112 0.0.0.15 established
+ remark Denies all traffic from the Guest to access the internal networks
+ deny   ip 10.200.0.112 0.0.0.15 10.200.0.0 0.0.255.255
+ deny   ip 10.200.0.112 0.0.0.15 10.100.0.0 0.0.255.255
+ remark Allow DNS
+ permit udp 10.200.0.112 0.0.0.15 any eq domain
+ permit tcp 10.200.0.112 0.0.0.15 any eq domain
+ remark Denies all icmp
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_INTERNET_INBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allow Syslog
+ permit udp 10.200.0.0 0.0.0.31 host 10.100.0.16 eq syslog
+ remark Defines that any session started from inside the internal to http/https is allowed
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ permit icmp any any
+ remark Allows HK-BorderRouter to access FK-BorderRouter
+ permit ip host 200.100.0.1 host 200.100.0.6
+ remark Allow OSPF
+ permit ospf host 200.100.0.1 host 200.100.0.6
+ remark Allow GRE
+ permit gre host 200.100.0.1 host 200.100.0.6
+ remark Allows HK-BorderRouter to access FK
+ permit ip host 200.100.0.1 10.200.0.0 0.0.0.255
+ remark Allow traffic from VPN tunnel
+ permit ip 172.168.50.0 0.0.0.3 10.200.0.0 0.0.0.255
+ remark Allows HK to access FK
+ permit ip 10.100.0.0 0.0.0.255 10.200.0.0 0.0.0.255
+ remark Allow DNS
+ permit udp any 10.200.0.0 0.0.0.255 eq domain
+ permit tcp any 10.200.0.0 0.0.0.255 eq domain
+ remark Denies all RFC address and multicast
+ deny   ip 10.0.0.0 0.255.255.255 any
+ deny   ip 127.0.0.0 0.255.255.255 any
+ deny   ip 172.0.0.0 0.255.255.255 any
+ deny   ip 192.0.0.0 0.255.255.255 any
+ deny   ip 224.0.0.0 15.255.255.255 any
+ deny   ip host 255.255.255.255 any
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ remark Denies all other ICMP packages
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_INTERNET_OUTBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allow Syslog
+ permit udp 10.200.0.0 0.0.0.31 host 10.100.0.16 eq syslog
+ remark Allows hosts on the internal network to have an established session to http/https
+ permit tcp any 10.200.0.0 0.0.255.255 established
+ permit icmp any any
+ remark Allows FK-BorderRouter to access HK-BorderRouter
+ permit ip host 200.100.0.6 host 200.100.0.1
+ remark Allow OSPF
+ permit ospf host 200.100.0.6 host 200.100.0.1
+ remark Allow GRE
+ permit gre host 200.100.0.6 host 200.100.0.1
+ remark Allows FK to access HK-BorderRouter
+ permit ip 10.200.0.0 0.0.0.255 host 200.100.0.1
+ remark Allow traffic to VPN tunnel
+ permit ip 10.200.0.0 0.0.0.255 172.168.50.0 0.0.0.3
+ remark Allows FK to access HK
+ permit ip 10.200.0.0 0.0.0.255 10.100.0.0 0.0.0.255
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp 10.200.0.0 0.0.0.255 10.100.0.0 0.0.0.255 echo-reply
+ permit icmp 10.200.0.0 0.0.0.255 10.100.0.0 0.0.0.255 unreachable
+ remark Allow DNS
+ permit udp 10.200.0.0 0.0.0.255 any eq domain
+ permit tcp 10.200.0.0 0.0.0.255 any eq domain
+ remark Denies all other ICMP packages
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_MANAGEMENT_INBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allow Syslog
+ permit udp 10.200.0.0 0.0.0.31 host 10.100.0.16 eq syslog
+ remark Allows hosts on management to access http/https
+ permit tcp any 10.200.0.0 0.0.0.255 eq 443
+ permit tcp any 10.200.0.0 0.0.0.255 eq www
+ remark Allow DHCP discover
+ permit udp 10.200.0.32 0.0.0.31 host 10.200.0.1 eq bootps
+ permit udp 10.200.0.64 0.0.0.31 host 10.200.0.1 eq bootps
+ remark Allow DHCP Discover
+ permit udp host 10.200.0.1 eq bootpc 10.200.0.32 0.0.0.31 eq bootps
+ permit udp host 10.200.0.1 eq bootpc 10.200.0.64 0.0.0.31 eq bootps
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allows HK to ping FK- Management
+ permit icmp 10.100.0.0 0.0.0.255 10.200.0.0 0.0.0.255
+ remark Allow DNS
+ permit udp any 10.200.0.0 0.0.0.31 eq domain
+ permit tcp any 10.200.0.0 0.0.0.31 eq domain
+ remark Allows hosts on management network to access the other networks
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.0 0.0.0.31
+ remark Allows HK to access FK
+ permit ip 10.100.0.0 0.0.0.255 10.200.0.0 0.0.0.31
+ remark Denies all other ICMP packages
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_MANAGEMENT_OUTBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allow Syslog
+ permit udp 10.200.0.0 0.0.0.31 host 10.100.0.16 eq syslog
+ remark Defines that any session started from the management to http/https is allowed
+ permit tcp any 10.200.0.0 0.0.0.31 established
+ remark Allow DHCP discover
+ permit udp host 10.200.0.1 eq bootpc 10.200.0.32 0.0.0.31 eq bootps
+ permit udp host 10.200.0.1 eq bootpc 10.200.0.64 0.0.0.31 eq bootps
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allows FK-Management to ping HK
+ permit icmp 10.200.0.0 0.0.0.255 10.100.0.0 0.0.0.255
+ remark Allow DNS
+ permit udp 10.200.0.0 0.0.0.31 any eq domain
+ permit tcp 10.200.0.0 0.0.0.31 any eq domain
+ remark Allows DHCP calls
+ permit udp any any eq bootpc
+ remark Allows hosts on management network to access the other networks
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.64 0.0.0.31
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.96 0.0.0.15
+ remark Allows host on Managment to access HK
+ permit ip 10.200.0.0 0.0.0.31 10.100.0.0 0.0.0.255
+ remark Denies all other icmp
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_OFFICE_INBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allows hosts on management to access http/https
+ permit tcp any 10.200.0.0 0.0.0.255 eq 443
+ permit tcp any 10.200.0.0 0.0.0.255 eq www
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allows hosts on Office network to access the other networks
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.32 0.0.0.31
+ remark Allows HK to ping FK-Office
+ permit icmp 10.100.0.0 0.0.0.255 10.200.0.32 0.0.0.31
+ remark Allows HK to access FK-Office
+ permit ip 10.100.0.0 0.0.0.255 10.200.0.32 0.0.0.31
+ remark Allow DNS
+ permit udp any 10.200.0.32 0.0.0.31 eq domain
+ permit tcp any 10.200.0.32 0.0.0.31 eq domain
+ remark Alllows DHCP calls
+ permit udp any any eq bootps
+ permit udp any any eq bootpc
+ remark Denies all other ICMP packages
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_OFFICE_OUTBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Defines that any session started from the Office to http/https is allowed
+ permit tcp any 10.200.0.32 0.0.0.31 established
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allows hosts on Office network to access the other networks
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.64 0.0.0.31
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.96 0.0.0.15
+ remark Allows FK-Office to ping HK
+ permit icmp 10.200.0.32 0.0.0.31 10.100.0.0 0.0.0.255
+ remark Allows FK-Office to access HK
+ permit ip 10.200.0.32 0.0.0.31 10.100.0.0 0.0.0.255
+ remark Allow DNS
+ permit udp 10.200.0.32 0.0.0.31 any eq domain
+ permit tcp 10.200.0.32 0.0.0.31 any eq domain
+ remark Allows DHCP calls
+ permit udp any any eq bootpc
+ remark Denies all other ICMP
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_STOREWH_INBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allows hosts on management to access http/https
+ permit tcp any 10.200.0.0 0.0.0.255 eq 443
+ permit tcp any 10.200.0.0 0.0.0.255 eq www
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allows hosts on StoreWH network to access the other networks
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.64 0.0.0.31
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.64 0.0.0.31
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.64 0.0.0.31
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.64 0.0.0.31
+ remark Allows HK to ping FK-StoreWH
+ permit icmp 10.100.0.0 0.0.0.255 10.200.0.64 0.0.0.31
+ remark Allows HK to access FK-StoreWH
+ permit ip 10.100.0.0 0.0.0.255 10.200.0.64 0.0.0.31
+ remark Allow DNS
+ permit udp any 10.200.0.64 0.0.0.31 eq domain
+ permit tcp any 10.200.0.64 0.0.0.31 eq domain
+ remark Allows DHCP calls
+ permit udp any any eq bootps
+ permit udp any any eq bootpc
+ remark Denies all other ICMP packages
+ deny   icmp any any
+ remark Denies all other all other traffic
+ deny   ip any any
+ip access-list extended ACL_STOREWH_OUTBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Defines that any session started from the StoreWH to http/https is allowed
+ permit tcp any 10.200.0.64 0.0.0.31 established
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allows hosts on Office network to access the other networks
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.96 0.0.0.15
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.64 0.0.0.31
+ remark Allows FK-StoreWH to ping HK
+ permit icmp 10.200.0.64 0.0.0.31 10.100.0.0 0.0.0.255
+ remark Allows FK-StoreWH to access HK
+ permit ip 10.200.0.64 0.0.0.31 10.100.0.0 0.0.0.255
+ remark Allow DNS
+ permit udp 10.200.0.64 0.0.0.31 any eq domain
+ permit tcp 10.200.0.64 0.0.0.31 any eq domain
+ remark Denies all other icmp
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_WEBSERVER_INBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Allows hosts on Webserver to access http/https
+ permit tcp any any
+ permit tcp any any eq 443
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allow DNS
+ permit udp any 10.200.0.96 0.0.0.15 eq domain
+ permit tcp any 10.200.0.96 0.0.0.15 eq domain
+ remark Allows hosts on the other network to access Webserver
+ permit ip 10.200.0.0 0.0.0.31 10.200.0.96 0.0.0.15
+ permit ip 10.200.0.32 0.0.0.31 10.200.0.96 0.0.0.15
+ permit ip 10.200.0.64 0.0.0.31 10.200.0.96 0.0.0.15
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.96 0.0.0.15
+ remark Denies all icmp
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended ACL_WEBSERVER_OUTBOUND
+ remark Allow NTP
+ permit udp any any eq ntp
+ remark Defines that any session started from the Webserver to http/https is allowed
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ remark Allows the host to sent ICMP packages for trouble shooting
+ permit icmp any any
+ remark Allow DNS
+ permit udp 10.200.0.96 0.0.0.15 any eq domain
+ permit tcp 10.200.0.96 0.0.0.15 any eq domain
+ remark Allows hosts on the other network to access Webserver
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.0 0.0.0.31
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.32 0.0.0.31
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.64 0.0.0.31
+ permit ip 10.200.0.96 0.0.0.15 10.200.0.96 0.0.0.15
+ remark Denies all other icmp
+ deny   icmp any any
+ remark Denies all other traffic
+ deny   ip any any
+ip access-list extended OSPF-VPN
+ permit ospf any any
+ permit gre any any
+ permit icmp any any
+ permit tcp any any
+ permit udp any any
+ip access-list extended SSH_ACCESS
+ permit tcp 10.200.0.0 0.0.0.31 any eq 22
+ deny   tcp any any eq 22
+!
+logging origin-id hostname
+logging host 10.100.0.16
+ipv6 route ::/0 2001:1111:2222:4444::1
+!
+!
+access-list 1 permit 10.200.0.0 0.0.0.255
+access-list 110 permit ip 10.200.0.0 0.0.255.255 10.100.0.0 0.0.255.255
+access-list 199 permit tcp any host 200.100.0.6 eq www
+!
+ipv6 access-list SSH_ACCESS_IPV6
+ permit tcp 2001:CAFE:2025:210::/64 any eq 22
+ deny tcp any any eq 22
+!
+control-plane
+!
+!
+banner motd ^CUnauthorized Access Is Prohihibited^C
+!
+line con 0
+ password 7 0802455D0A165445415F59526B
+ logging synchronous
+ login local
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+ stopbits 1
+line vty 0 4
+ access-class SSH_ACCESS in
+ ipv6 access-class SSH_ACCESS_IPV6 in
+ login local
+ transport input ssh
+line vty 5 15
+ access-class SSH_ACCESS in
+ ipv6 access-class SSH_ACCESS_IPV6 in
+ login local
+ transport input ssh
+!
+scheduler allocate 20000 1000
+ntp authentication-key 10 md5 082F585E021C1C071A190D172F 7
+ntp authenticate
+ntp trusted-key 10
+ntp update-calendar
+ntp server 200.100.0.5 key 10
+!
+end

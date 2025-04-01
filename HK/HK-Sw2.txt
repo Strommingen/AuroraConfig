@@ -1,13 +1,12 @@
 
 !
-! Last configuration change at 12:33:17 UTC Wed Mar 12 2025 by admin
+! Last configuration change at 13:18:09 UTC Sun Nov 2 2025 by admin
 !
 version 15.2
-service config
 no service pad
 service timestamps debug datetime msec
 service timestamps log datetime localtime
-no service password-encryption
+service password-encryption
 !
 hostname HK-Sw2
 !
@@ -44,8 +43,11 @@ system mtu routing 1500
 ip routing
 !
 !
+no ip dhcp snooping information option
 no ip domain-lookup
+ip domain-name kvistco.mc
 login block-for 60 attempts 3 within 120
+ipv6 unicast-routing
 !
 !
 !
@@ -85,6 +87,7 @@ spanning-tree mode rapid-pvst
 spanning-tree portfast edge default
 spanning-tree portfast edge bpduguard default
 spanning-tree extend system-id
+spanning-tree vlan 110,120,130 priority 28672
 !
 vlan internal allocation policy ascending
 !
@@ -139,6 +142,10 @@ interface GigabitEthernet1/0/5
  description Connection to HK-AP-Sales
  switchport access vlan 120
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
  spanning-tree portfast edge
  spanning-tree bpduguard enable
 !
@@ -146,6 +153,10 @@ interface GigabitEthernet1/0/6
  description Connection to HK-AP-Guest
  switchport access vlan 130
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
  spanning-tree portfast edge
  spanning-tree bpduguard enable
 !
@@ -267,6 +278,8 @@ interface Vlan1
 !
 interface Vlan110
  ip address 10.100.0.12 255.255.255.224
+ ipv6 address FE80::12 link-local
+ ipv6 address 2001:CAFE:2025:110::12/64
 !
 interface Vlan120
  no ip address

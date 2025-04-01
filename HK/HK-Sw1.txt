@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 09:53:53 UTC Wed Mar 12 2025 by admin
+! Last configuration change at 13:36:30 UTC Sun Nov 2 2025 by admin
 !
 version 15.2
 no service pad
@@ -40,8 +40,12 @@ aaa common-criteria policy policy1
 aaa session-id common
 switch 1 provision c1000-24t-4g-l
 system mtu routing 1500
+ip arp inspection vlan 120,130
 !
 !
+ip dhcp snooping vlan 120,130
+no ip dhcp snooping information option
+ip dhcp snooping
 no ip domain-lookup
 ip domain-name kvistco.mc
 login block-for 60 attempts 3 within 120
@@ -85,6 +89,7 @@ spanning-tree mode rapid-pvst
 spanning-tree portfast edge default
 spanning-tree portfast edge bpduguard default
 spanning-tree extend system-id
+spanning-tree vlan 110,120,130 priority 24576
 !
 vlan internal allocation policy ascending
 no cdp run
@@ -99,12 +104,14 @@ interface Port-channel1
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
 !
 interface Port-channel2
  switchport trunk allowed vlan 110,120,130
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
 !
 interface GigabitEthernet1/0/1
  description Etherchannel to HK-Sw2
@@ -112,7 +119,9 @@ interface GigabitEthernet1/0/1
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
  channel-group 1 mode desirable
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/2
  description Etherchannel to HK-Sw2
@@ -120,7 +129,9 @@ interface GigabitEthernet1/0/2
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
  channel-group 1 mode desirable
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/3
  description Etherchannel to HK-Sw3
@@ -128,7 +139,9 @@ interface GigabitEthernet1/0/3
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
  channel-group 2 mode desirable
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/4
  description Etherchannel to HK-Sw3
@@ -136,150 +149,292 @@ interface GigabitEthernet1/0/4
  switchport trunk native vlan 999
  switchport mode trunk
  switchport nonegotiate
+ ip arp inspection trust
  channel-group 2 mode desirable
+ ip dhcp snooping limit rate 80
 !
 interface GigabitEthernet1/0/5
  switchport access vlan 120
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security mac-address sticky 687f.7410.5a49
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  spanning-tree portfast edge
  spanning-tree bpduguard enable
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/6
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/7
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/8
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/9
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/10
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/11
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/12
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/13
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/14
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/15
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/16
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/17
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/18
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/19
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/20
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/21
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/22
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/23
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ switchport port-security maximum 3
+ switchport port-security mac-address sticky
+ switchport port-security aging time 10
+ switchport port-security aging type inactivity
+ switchport port-security
+ ip arp inspection limit rate 30
  shutdown
+ ip dhcp snooping limit rate 30
 !
 interface GigabitEthernet1/0/24
  description Connection to HK-R1
  switchport trunk allowed vlan 110,120,130
  switchport trunk native vlan 999
  switchport mode trunk
+ ip arp inspection trust
+ ip dhcp snooping trust
 !
 interface GigabitEthernet1/0/25
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
 !
 interface GigabitEthernet1/0/26
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
 !
 interface GigabitEthernet1/0/27
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
 !
 interface GigabitEthernet1/0/28
  description Unused ports assigned to BlackHole
  switchport access vlan 888
  switchport mode access
+ ip arp inspection limit rate 30
  shutdown
 !
 interface Vlan1
